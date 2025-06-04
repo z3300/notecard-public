@@ -26,11 +26,34 @@ const protectMutation = () => {
 };
 
 export const contentRouter = router({
-  getAll: publicProcedure.query(({ ctx }) =>
-    ctx.prisma.contentItem.findMany({
-      orderBy: { createdAt: 'desc' },
-    })
-  ),
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    console.log('🔍 Starting getAll query...');
+    console.log('📊 Database URL configured:', !!process.env.DATABASE_URL);
+    console.log('🌍 Environment:', process.env.NODE_ENV);
+    
+    try {
+      console.log('🔗 Testing database connection...');
+      await ctx.prisma.$connect();
+      console.log('✅ Database connection successful');
+      
+      console.log('📋 Fetching content items...');
+      const items = await ctx.prisma.contentItem.findMany({
+        orderBy: { createdAt: 'desc' },
+      });
+      console.log(`✨ Successfully fetched ${items.length} items`);
+      
+      return items;
+    } catch (error) {
+      console.error('❌ Database error in getAll:', error);
+      console.error('📝 Error details:', {
+        name: error.name,
+        message: error.message,
+        code: error.code,
+        meta: error.meta,
+      });
+      throw error;
+    }
+  }),
 
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
