@@ -29,6 +29,8 @@ export const contentRouter = router({
   getAll: publicProcedure.query(async ({ ctx }) => {
     console.log('🔍 Starting getAll query...');
     console.log('📊 Database URL configured:', !!process.env.DATABASE_URL);
+    console.log('🔗 DATABASE_URL (first 50 chars):', process.env.DATABASE_URL?.substring(0, 50));
+    console.log('🔗 DATABASE_URL (last 50 chars):', process.env.DATABASE_URL?.substring(process.env.DATABASE_URL.length - 50));
     console.log('🌍 Environment:', process.env.NODE_ENV);
     
     try {
