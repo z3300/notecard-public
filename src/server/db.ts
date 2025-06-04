@@ -11,5 +11,6 @@ export const prisma: PrismaClient = globalThis.prisma ?? new PrismaClient({
       url: process.env.DATABASE_URL,
     },
   },
+  log: ['error'],
 });
 if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma; 
