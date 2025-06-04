@@ -16,7 +16,7 @@ const t = initTRPC.context<{ prisma: PrismaClient }>().create({
         ...shape.data,
         zodError:
           error.code === 'BAD_REQUEST' && error.cause?.constructor?.name === 'ZodError'
-            ? error.cause.flatten()
+            ? (error.cause as unknown as { flatten: () => unknown }).flatten()
             : null,
       },
     };

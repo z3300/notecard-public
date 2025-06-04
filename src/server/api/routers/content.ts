@@ -46,10 +46,10 @@ export const contentRouter = router({
     } catch (error) {
       console.error('❌ Database error in getAll:', error);
       console.error('📝 Error details:', {
-        name: error.name,
-        message: error.message,
-        code: error.code,
-        meta: error.meta,
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        code: (error as { code?: string })?.code,
+        meta: (error as { meta?: unknown })?.meta,
       });
       throw error;
     }
