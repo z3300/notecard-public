@@ -1,4 +1,4 @@
-const cheerio = require('cheerio');
+import * as cheerio from 'cheerio';
 
 // YouTube API key would go here in production
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -141,7 +141,7 @@ async function extractRedditMetadata(url) {
         thumbnailUrl: thumbnailUrl,
         description: description,
       };
-    } catch (fallbackError) {
+    } catch {
       throw new Error(`Failed to extract Reddit metadata: ${error}`);
     }
   }
@@ -490,7 +490,7 @@ async function extractBookMetadata(url) {
   }
 }
 
-async function extractGenericMetadata(url, generateScreenshot = true) {
+async function extractGenericMetadata(url) {
   try {
     const response = await fetch(url, {
       headers: {
@@ -522,7 +522,7 @@ async function extractGenericMetadata(url, generateScreenshot = true) {
   }
 }
 
-async function extractMetadata(url, generateScreenshot = true) {
+async function extractMetadata(url) {
   try {
     // Validate URL format
     try {
@@ -547,7 +547,7 @@ async function extractMetadata(url, generateScreenshot = true) {
     } else if (url.includes('goodreads.com') || (url.includes('amazon.com') && (url.includes('/dp/') || url.includes('/product/'))) || url.includes('books.google.com')) {
       metadata = await extractBookMetadata(url);
     } else {
-      metadata = await extractGenericMetadata(url, generateScreenshot);
+      metadata = await extractGenericMetadata(url);
     }
 
     // Clean up the data
@@ -572,4 +572,4 @@ async function extractMetadata(url, generateScreenshot = true) {
   }
 }
 
-module.exports = { extractMetadata }; 
+export { extractMetadata }; 

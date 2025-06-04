@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient, ContentType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -132,7 +132,7 @@ async function main() {
     await prisma.contentItem.create({
       data: {
         id: item.id,
-        type: item.type,
+        type: item.type as ContentType,
         url: item.url,
         title: item.title,
         note: item.note,

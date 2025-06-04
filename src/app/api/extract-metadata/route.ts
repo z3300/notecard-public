@@ -17,7 +17,16 @@ interface MetadataResponse {
 // YouTube API key would go here in production
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
-async function extractYouTubeMetadata(url: string): Promise<any> {
+interface YouTubeMetadata {
+  type: string;
+  title: string;
+  author?: string;
+  thumbnailUrl?: string;
+  duration?: string;
+  description?: string;
+}
+
+async function extractYouTubeMetadata(url: string): Promise<YouTubeMetadata> {
   try {
     const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
     if (!videoId) throw new Error('Invalid YouTube URL');
@@ -71,7 +80,26 @@ async function extractYouTubeMetadata(url: string): Promise<any> {
   }
 }
 
-async function extractRedditMetadata(url: string): Promise<any> {
+interface RedditMetadata {
+  type: string;
+  title: string;
+  author?: string;
+  thumbnailUrl?: string;
+  description?: string;
+  metadata?: {
+    subreddit?: string;
+    score?: number;
+    numComments?: number;
+    isNsfw?: boolean;
+    postType?: string;
+    createdUtc?: number;
+    permalink?: string;
+    url?: string;
+    extractionMethod?: string;
+  };
+}
+
+async function extractRedditMetadata(url: string): Promise<RedditMetadata> {
   try {
     // Convert to JSON API URL
     const jsonUrl = url.includes('.json') ? url : `${url}.json`;
@@ -94,10 +122,10 @@ async function extractRedditMetadata(url: string): Promise<any> {
       // Extract basic post information
       let title = post.title || 'Untitled';
       let author = post.author;
-      let subreddit = post.subreddit;
-      let score = post.score || 0;
-      let numComments = post.num_comments || 0;
-      let description = post.selftext || '';
+      const subreddit = post.subreddit;
+      const score = post.score || 0;
+      const numComments = post.num_comments || 0;
+      const description = post.selftext || '';
       let thumbnailUrl = post.thumbnail;
       
       // Clean up title - Reddit titles can have extra formatting
@@ -186,7 +214,7 @@ async function extractRedditMetadata(url: string): Promise<any> {
       // Extract Open Graph metadata
       let title = $('meta[property="og:title"]').attr('content') || $('title').text() || 'Reddit Post';
       let description = $('meta[property="og:description"]').attr('content') || '';
-      let thumbnailUrl = $('meta[property="og:image"]').attr('content');
+      const thumbnailUrl = $('meta[property="og:image"]').attr('content');
       let author = $('meta[name="author"]').attr('content');
       
       // Try to extract subreddit from URL if not found in meta
@@ -245,13 +273,21 @@ async function extractRedditMetadata(url: string): Promise<any> {
           extractionMethod: 'scraping'
         }
       };
-    } catch (fallbackError) {
+    } catch {
       throw new Error(`Failed to extract Reddit metadata: ${error}`);
     }
   }
 }
 
-async function extractTwitterMetadata(url: string): Promise<any> {
+interface TwitterMetadata {
+  type: string;
+  title?: string;
+  author?: string;
+  thumbnailUrl?: string;
+  description?: string;
+}
+
+async function extractTwitterMetadata(url: string): Promise<TwitterMetadata> {
   try {
     // For Twitter, we'll mainly use web scraping since the API requires authentication
     const response = await fetch(url, {
@@ -275,7 +311,16 @@ async function extractTwitterMetadata(url: string): Promise<any> {
   }
 }
 
-async function extractSpotifyMetadata(url: string): Promise<any> {
+interface SpotifyMetadata {
+  type: string;
+  title: string;
+  author?: string;
+  thumbnailUrl?: string;
+  duration?: string;
+  description?: string;
+}
+
+async function extractSpotifyMetadata(url: string): Promise<SpotifyMetadata> {
   try {
     const response = await fetch(url, {
       headers: {
@@ -289,8 +334,8 @@ async function extractSpotifyMetadata(url: string): Promise<any> {
     // Extract basic Open Graph metadata
     let title = $('meta[property="og:title"]').attr('content') || $('title').text() || 'Untitled';
     let author = $('meta[property="og:description"]').attr('content');
-    let thumbnailUrl = $('meta[property="og:image"]').attr('content');
-    let description = $('meta[name="description"]').attr('content');
+    const thumbnailUrl = $('meta[property="og:image"]').attr('content');
+    const description = $('meta[name="description"]').attr('content');
     
     // Parse Spotify-specific information from the title and description
     // Spotify titles often follow patterns like "Song Name - Artist Name" or "Album Name - Artist Name"
@@ -348,7 +393,7 @@ async function extractSpotifyMetadata(url: string): Promise<any> {
           if (jsonData.duration) {
             duration = jsonData.duration;
           }
-        } catch (e) {
+        } catch {
           // Ignore JSON parsing errors
         }
       });
@@ -385,7 +430,7 @@ async function extractSpotifyMetadata(url: string): Promise<any> {
               if (nameMatch) {
                 author = nameMatch[1];
               }
-            } catch (e) {
+            } catch {
               // Ignore parsing errors
             }
           }
@@ -406,7 +451,21 @@ async function extractSpotifyMetadata(url: string): Promise<any> {
   }
 }
 
-async function extractMovieMetadata(url: string): Promise<any> {
+interface MovieMetadata {
+  type: string;
+  title: string;
+  author?: string;
+  thumbnailUrl?: string;
+  duration?: string;
+  description?: string;
+  metadata?: {
+    year?: string;
+    rating?: string;
+    director?: string;
+  };
+}
+
+async function extractMovieMetadata(url: string): Promise<MovieMetadata> {
   try {
     const response = await fetch(url, {
       headers: {
@@ -533,8 +592,8 @@ async function extractMovieMetadata(url: string): Promise<any> {
       duration,
       description,
       metadata: {
-        year,
-        rating,
+        year: year || undefined,
+        rating: rating || undefined,
         director: author
       }
     };
@@ -543,7 +602,22 @@ async function extractMovieMetadata(url: string): Promise<any> {
   }
 }
 
-async function extractBookMetadata(url: string): Promise<any> {
+interface BookMetadata {
+  type: string;
+  title: string;
+  author?: string;
+  thumbnailUrl?: string;
+  duration?: string;
+  description?: string;
+  metadata?: {
+    pages?: string;
+    publishedYear?: string;
+    rating?: string;
+    rawAuthor?: string;
+  };
+}
+
+async function extractBookMetadata(url: string): Promise<BookMetadata> {
   try {
     const response = await fetch(url, {
       headers: {
@@ -676,9 +750,9 @@ async function extractBookMetadata(url: string): Promise<any> {
       duration,
       description,
       metadata: {
-        pages,
-        publishedYear,
-        rating,
+        pages: pages || undefined,
+        publishedYear: publishedYear || undefined,
+        rating: rating || undefined,
         rawAuthor: author
       }
     };
@@ -687,7 +761,15 @@ async function extractBookMetadata(url: string): Promise<any> {
   }
 }
 
-async function extractGenericMetadata(url: string): Promise<any> {
+interface GenericMetadata {
+  type: string;
+  title: string;
+  author?: string;
+  thumbnailUrl?: string;
+  description?: string;
+}
+
+async function extractGenericMetadata(url: string): Promise<GenericMetadata> {
   try {
     const response = await fetch(url, {
       headers: {
@@ -703,7 +785,7 @@ async function extractGenericMetadata(url: string): Promise<any> {
     if (url.includes('soundcloud.com')) type = 'soundcloud';
     
     // Get existing thumbnail from Open Graph or other meta tags
-    let thumbnailUrl = $('meta[property="og:image"]').attr('content') ||
+    const thumbnailUrl = $('meta[property="og:image"]').attr('content') ||
                       $('meta[name="twitter:image"]').attr('content') ||
                       $('meta[property="twitter:image"]').attr('content') ||
                       $('meta[name="image"]').attr('content') ||

@@ -22,7 +22,7 @@ export default function Dashboard() {
   const sortedContent = [...items].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   
   // Search function that looks through multiple fields
-  const searchContent = (content: any, query: string) => {
+  const searchContent = (content: { title?: string; author?: string | null; note?: string; type: string; location?: string | null; url: string }, query: string) => {
     if (!query.trim()) return true;
     
     const searchTerm = query.toLowerCase();
