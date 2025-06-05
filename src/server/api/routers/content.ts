@@ -27,32 +27,14 @@ const protectMutation = () => {
 
 export const contentRouter = router({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    console.log('🔍 Starting getAll query...');
-    console.log('📊 Database URL configured:', !!process.env.DATABASE_URL);
-    console.log('🔗 DATABASE_URL (first 50 chars):', process.env.DATABASE_URL?.substring(0, 50));
-    console.log('🔗 DATABASE_URL (last 50 chars):', process.env.DATABASE_URL?.substring(process.env.DATABASE_URL.length - 50));
-    console.log('🌍 Environment:', process.env.NODE_ENV);
-    
     try {
-      console.log('🔗 Testing database connection...');
-      await ctx.prisma.$connect();
-      console.log('✅ Database connection successful');
-      
-      console.log('📋 Fetching content items...');
       const items = await ctx.prisma.contentItem.findMany({
         orderBy: { createdAt: 'desc' },
       });
-      console.log(`✨ Successfully fetched ${items.length} items`);
       
       return items;
     } catch (error) {
-      console.error('❌ Database error in getAll:', error);
-      console.error('📝 Error details:', {
-        name: error instanceof Error ? error.name : 'Unknown',
-        message: error instanceof Error ? error.message : String(error),
-        code: (error as { code?: string })?.code,
-        meta: (error as { meta?: unknown })?.meta,
-      });
+      console.error('Database error in getAll:', error);
       throw error;
     }
   }),

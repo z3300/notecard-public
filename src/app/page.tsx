@@ -82,7 +82,7 @@ export default function Dashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: 0.0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             onClick={() => setShowAboutModal(false)}
           >
@@ -145,7 +145,7 @@ export default function Dashboard() {
               {/* About Button */}
               <button
                 onClick={() => setShowAboutModal(true)}
-                className="text-sm text-gray-500 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-lg transition-all duration-150 font-medium"
+                className="text-sm text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-100 px-4 py-2 rounded-lg transition-all duration-150 font-medium"
               >
                 about
               </button>
@@ -226,7 +226,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-screen-2xl mx-auto px-4 py-8">
+      <main className="w-full max-w-7xl mx-auto px-4 py-8">
         {/* Filter Dropdown and Search Results Info */}
         <div className="flex justify-between items-center mb-4">
           {/* Search Results Info */}
@@ -308,7 +308,10 @@ export default function Dashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid auto-rows-max gap-6"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 350px), 1fr))'
+            }}
           >
             {isLoading
               ? Array.from({ length: 6 }).map((_, i) => (
