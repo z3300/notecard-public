@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showStats, setShowStats] = useState(false);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
   
   // Sort content by date (newest first)
   const sortedContent = [...items].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -74,14 +75,80 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* About Modal */}
+      <AnimatePresence>
+        {showAboutModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowAboutModal(false)}
+          >
+            {/* Backdrop with subtle blur */}
+            <div className="absolute inset-0 backdrop-blur-md bg-black/30" />
+            
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="relative bg-white rounded-xl shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: 'min(85vw, 680px)',
+                height: 'min(90vh, 872px)',
+                aspectRatio: '8.5 / 11'
+              }}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowAboutModal(false)}
+                className="absolute top-3 right-3 z-10 w-7 h-7 bg-red-100 hover:bg-red-200 rounded-full shadow-sm flex items-center justify-center transition-all duration-150 hover:scale-105"
+              >
+                <svg
+                  className="w-4 h-4 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              
+              {/* About Image */}
+              <img
+                src="/aboutpage.png"
+                alt="About"
+                className="w-full h-full object-contain"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <header className="border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between mb-6">
-            <div>
+            <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-semibold text-gray-700">
                 notecards
               </h1>
+              {/* About Button */}
+              <button
+                onClick={() => setShowAboutModal(true)}
+                className="text-sm text-gray-500 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-lg transition-all duration-150 font-medium"
+              >
+                about
+              </button>
             </div>
             <div className="flex items-center space-x-4">
               {/* Hoverable Stats Dropdown */}
