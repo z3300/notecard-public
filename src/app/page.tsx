@@ -78,7 +78,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-white">
       {/* Minimal Announcement Bar */}
-      <div className="w-full h-8 bg-gray-50 border-b border-gray-100 overflow-hidden relative">
+      {/* <div className="w-full h-8 bg-gray-50 border-b border-gray-100 overflow-hidden relative">
         <div 
           className="absolute inset-y-0 flex items-center whitespace-nowrap text-xs text-gray-500 font-light"
           style={{
@@ -100,7 +100,7 @@ export default function Dashboard() {
             transform: translateX(100vw);
           }
         }
-      `}</style>
+      `}</style> */}
 
       {/* About Modal */}
       <AnimatePresence>
