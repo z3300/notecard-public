@@ -6,8 +6,8 @@ import { CARD_SIZES } from './cardSizes';
 
 export interface ContentItem {
   id: string;
-  type: 'youtube' | 'article' | 'reddit' | 'twitter' | 'spotify' | 'soundcloud' | 'movie' | 'book';
-  url: string;
+  type: 'youtube' | 'article' | 'reddit' | 'twitter' | 'spotify' | 'soundcloud' | 'movie' | 'book' | 'image' | 'video';
+  url?: string | null;
   title: string;
   note: string;
   createdAt: Date;
@@ -33,7 +33,9 @@ const ContentCard: React.FC<ContentCardProps> = ({ content }) => {
       spotify: 'bg-green-500',
       soundcloud: 'bg-orange-600',
       movie: 'bg-purple-500',
-      book: 'bg-amber-500'
+      book: 'bg-amber-500',
+      image: 'bg-pink-500',
+      video: 'bg-indigo-500'
     };
     return colors[type as keyof typeof colors] || 'bg-gray-500';
   };
@@ -41,7 +43,7 @@ const ContentCard: React.FC<ContentCardProps> = ({ content }) => {
   const getEmbedContent = () => {
     switch (content.type) {
       case 'youtube':
-        const videoId = extractYouTubeId(content.url);
+        const videoId = content.url ? extractYouTubeId(content.url) : null;
         return (
           <div className={`w-full ${CARD_SIZES.embedHeight} bg-gray-100 rounded-t-lg overflow-hidden border-b border-gray-200`}>
             {videoId ? (
@@ -113,7 +115,7 @@ const ContentCard: React.FC<ContentCardProps> = ({ content }) => {
           </div>
         );
       case 'twitter':
-        const tweetId = extractTweetId(content.url);
+        const tweetId = content.url ? extractTweetId(content.url) : null;
         return (
           <div className={`w-full ${CARD_SIZES.embedHeight} bg-gray-50 rounded-t-lg overflow-hidden border-b border-gray-200`}>
             {tweetId ? (
@@ -135,7 +137,7 @@ const ContentCard: React.FC<ContentCardProps> = ({ content }) => {
           </div>
         );
       case 'spotify': {
-        const spotifyInfo = extractSpotifyInfo(content.url);
+        const spotifyInfo = content.url ? extractSpotifyInfo(content.url) : null;
         return (
           <div className={`w-full ${CARD_SIZES.embedHeight} bg-gray-100 rounded-t-lg overflow-hidden border-b border-gray-200`}>
             {spotifyInfo ? (
@@ -158,7 +160,7 @@ const ContentCard: React.FC<ContentCardProps> = ({ content }) => {
         );
       }
       case 'soundcloud': {
-        const encodedUrl = encodeURIComponent(content.url);
+        const encodedUrl = content.url ? encodeURIComponent(content.url) : '';
         return (
           <div className={`w-full ${CARD_SIZES.embedHeight} bg-gray-100 rounded-t-lg overflow-hidden border-b border-gray-200`}>
             <iframe
@@ -223,6 +225,36 @@ const ContentCard: React.FC<ContentCardProps> = ({ content }) => {
             </div>
           </div>
         );
+      case 'image':
+        return (
+          <div className={`w-full ${CARD_SIZES.embedHeight} bg-gray-50 rounded-t-lg overflow-hidden border-b border-gray-200`}>
+            {content.thumbnail ? (
+              <img src={content.thumbnail} alt={content.title} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-600">
+                <div className="text-center">
+                  <div className={`${CARD_SIZES.iconText} ${CARD_SIZES.iconMargin}`}>🖼️</div>
+                  <div className={CARD_SIZES.metaText}>Image</div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      case 'video':
+        return (
+          <div className={`w-full ${CARD_SIZES.embedHeight} bg-gray-50 rounded-t-lg overflow-hidden border-b border-gray-200`}>
+            {content.thumbnail ? (
+              <video src={content.thumbnail} className="w-full h-full object-cover" controls preload="metadata" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-600">
+                <div className="text-center">
+                  <div className={`${CARD_SIZES.iconText} ${CARD_SIZES.iconMargin}`}>🎥</div>
+                  <div className={CARD_SIZES.metaText}>Video</div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
       default:
         return (
           <div className={`w-full ${CARD_SIZES.embedHeight} bg-gray-50 rounded-t-lg flex items-center justify-center border-b border-gray-200`}>
@@ -246,7 +278,9 @@ const ContentCard: React.FC<ContentCardProps> = ({ content }) => {
 
   const handleLinkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(content.url, '_blank', 'noopener,noreferrer');
+    if (content.url) {
+      window.open(content.url, '_blank', 'noopener,noreferrer');
+    }
   };
 
   return (
@@ -303,12 +337,16 @@ const ContentCard: React.FC<ContentCardProps> = ({ content }) => {
                 
                 {/* Action buttons row */}
                 <div className="flex items-center justify-between">
-                  <button
-                    onClick={handleLinkClick}
-                    className={`${CARD_SIZES.metaText} text-blue-600 hover:text-blue-800 underline underline-offset-2 font-medium`}
-                  >
-                    Open Link →
-                  </button>
+                  {content.url ? (
+                    <button
+                      onClick={handleLinkClick}
+                      className={`${CARD_SIZES.metaText} text-blue-600 hover:text-blue-800 underline underline-offset-2 font-medium`}
+                    >
+                      Open Link →
+                    </button>
+                  ) : (
+                    <span className={`${CARD_SIZES.metaText} text-gray-500 font-medium`}>Uploaded content</span>
+                  )}
                   <span className={`${CARD_SIZES.metaText} text-gray-400 font-normal`}>Click to flip</span>
                 </div>
               </div>

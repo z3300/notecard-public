@@ -23,7 +23,7 @@ export default function Dashboard() {
   const sortedContent = [...items].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   
   // Search function that looks through multiple fields
-  const searchContent = (content: { title?: string; author?: string | null; note?: string; type: string; location?: string | null; url: string }, query: string) => {
+  const searchContent = (content: { title?: string; author?: string | null; note?: string; type: string; location?: string | null; url?: string | null }, query: string) => {
     if (!query.trim()) return true;
     
     const searchTerm = query.toLowerCase();
@@ -51,7 +51,9 @@ export default function Dashboard() {
     spotify: '🎵',
     soundcloud: '☁️',
     movie: '🎬',
-    book: '📚'
+    book: '📚',
+    image: '🖼️',
+    video: '🎥'
   };
   
   // Apply both search and type filtering
@@ -75,6 +77,31 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Minimal Announcement Bar */}
+      <div className="w-full h-8 bg-gray-50 border-b border-gray-100 overflow-hidden relative">
+        <div 
+          className="absolute inset-y-0 flex items-center whitespace-nowrap text-xs text-gray-500 font-light"
+          style={{
+            animation: 'scroll-right 15s linear infinite',
+          }}
+        >
+          <span className="inline-block">
+          🔴   notecards   🔴
+          </span>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes scroll-right {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100vw);
+          }
+        }
+      `}</style>
+
       {/* About Modal */}
       <AnimatePresence>
         {showAboutModal && (

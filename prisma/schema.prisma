@@ -10,7 +10,7 @@ datasource db {
 model ContentItem {
   id        String      @id @default(cuid())
   type      ContentType
-  url       String
+  url       String?
   title     String
   note      String
   createdAt DateTime
@@ -29,4 +29,6 @@ enum ContentType {
   soundcloud
   movie
   book
+  image
+  video
 }
