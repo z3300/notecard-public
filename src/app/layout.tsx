@@ -21,6 +21,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script 
+          defer 
+          src="/analytics/script.js" 
+          data-website-id="806dd5e3-15f0-4e4a-81af-c4776ae7624f"
+        />
+      </head>
       <body className="antialiased" suppressHydrationWarning={true}>
         <Providers>{children}</Providers>
       </body>
